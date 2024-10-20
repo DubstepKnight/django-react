@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @default(autoincrement()) @id
+  firstname String
+  lastname  String
+  email     String    @db.VarChar(100) @unique
+  password  String    @db.Char(60) //<-I want this field to be hashed when created
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  Board Board[]
+}
+
+model Board {
+  id        String   @id @default(uuid())
+  userId    Int
+  name      String   @db.VarChar(100) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  Column Column[]
+}
+
+model Column {
+  id        String   @id @default(uuid())
+  boardId   String
+  name      String   @db.VarChar(100)
+  position  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@unique([boardId, position])
+  Card Card[]
+}
+
+model Card {
+  id        String   @id @default(uuid())
+  columnId  String 
+  content   String   
+  position  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  column    Column   @relation(fields: [columnId], references: [id], onDelete: Cascade)
+
+  @@unique([columnId, position])
+}
