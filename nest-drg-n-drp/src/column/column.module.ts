@@ -8,5 +8,6 @@ import { PrismaService } from 'prisma/prisma.service';
   imports: [PrismaModule],
   controllers: [ColumnController],
   providers: [ColumnService, PrismaService],
+  exports: [ColumnService],
 })
 export class ColumnModule {}

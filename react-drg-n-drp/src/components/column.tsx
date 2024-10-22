@@ -8,7 +8,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 const Column: React.FC<ColumnType> = ({ id, Card, name }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isOver, over } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: `col-${id}`,
   });
 

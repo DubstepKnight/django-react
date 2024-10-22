@@ -8,5 +8,6 @@ import { PrismaService } from 'prisma/prisma.service';
   imports: [PrismaModule],
   controllers: [CardController],
   providers: [CardService, PrismaService],
+  exports: [CardService],
 })
 export class CardModule {}
