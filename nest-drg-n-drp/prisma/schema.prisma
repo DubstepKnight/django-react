@@ -14,13 +14,15 @@ datasource db {
 }
 
 model User {
-  id        Int       @default(autoincrement()) @id
-  firstname String
-  lastname  String
-  email     String    @db.VarChar(100) @unique
-  password  String    @db.Char(60) //<-I want this field to be hashed when created
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
+  id                         Int       @default(autoincrement()) @id
+  firstname                  String
+  lastname                   String
+  email                      String    @db.VarChar(100) @unique
+  password                   String    @db.Char(60) //<-I want this field to be hashed when created
+  refreshToken               String    @default("")
+  refreshTokenExpirationDate DateTime? 
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime? @updatedAt
 
   Board Board[]
 }
@@ -46,6 +48,7 @@ model Column {
   board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   @@unique([boardId, position])
+  @@index([boardId, position])
   Card Card[]
 }
 
@@ -59,4 +62,5 @@ model Card {
   column    Column   @relation(fields: [columnId], references: [id], onDelete: Cascade)
 
   @@unique([columnId, position])
+  @@index([columnId, position])
 }

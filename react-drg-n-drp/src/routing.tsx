@@ -7,6 +7,12 @@ import BoardPage from './pages/board-page';
 import ProfilePage from './pages/profile-page';
 import { getCookie } from './lib/get-cookie';
 
+export enum ROUTES {
+  Profile = 'profile',
+  SignIn = 'sign-in',
+  SignUp = 'sign-up',
+}
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -16,24 +22,38 @@ export const router = createBrowserRouter([
       {
         path: ':boardId',
         element: <BoardPage />,
+        loader: () => {
+          const jwtCookie = getCookie('auth');
+          if (!jwtCookie) {
+            return redirect(`/${ROUTES.SignIn}`);
+          }
+          return null;
+        },
       },
       {
-        path: 'profile',
+        path: ROUTES.Profile,
         element: <ProfilePage />,
+        loader: () => {
+          const jwtCookie = getCookie('auth');
+          if (!jwtCookie) {
+            return redirect(`/${ROUTES.SignIn}`);
+          }
+          return null;
+        },
       },
     ],
   },
   {
-    path: '/sign-up',
+    path: `/${ROUTES.SignUp}`,
     element: <SignUpPage />,
   },
   {
-    path: '/sign-in',
+    path: `/${ROUTES.SignIn}`,
     element: <SignInPage />,
     loader: () => {
       const jwtCookie = getCookie('auth');
       if (jwtCookie) {
-        return redirect('/profile');
+        return redirect(`/${ROUTES.Profile}`);
       }
       return null;
     },
