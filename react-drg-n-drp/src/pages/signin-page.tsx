@@ -17,7 +17,7 @@ type Inputs = {
 };
 
 const SignInPage: React.FC = () => {
-  const [, setCookie] = useCookies(['auth']);
+  const [, setCookie] = useCookies(['logged_in']);
   const navigate = useNavigate();
 
   const { toast } = useToast();
@@ -25,9 +25,9 @@ const SignInPage: React.FC = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      setCookie('auth', data.access_token);
+      setCookie('logged_in', true);
       toast({
-        title: 'Successfull sign in!',
+        title: `Successfull sign in ${data.email}!`,
       });
       navigate('/');
     },

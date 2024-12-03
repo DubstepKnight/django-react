@@ -2,44 +2,37 @@ import type { Column as ColumnType } from '@/lib/types';
 import type { Card as CardType } from '@/lib/types';
 import React from 'react';
 import TodoCard from './todo-card';
-import { MoreHorizontal } from 'lucide-react';
-import { Button } from './ui/button';
 import { CSS } from '@dnd-kit/utilities';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CardShell } from './card-shell';
+import ColumnShell from './column-shell';
 
-const Column: React.FC<ColumnType> = ({ id, Card, name }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+const Column: React.FC<ColumnType> = ({ id, Card, name, boardId }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: `col-${id}`,
   });
 
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
+    opacity: isDragging ? 0 : 1,
   };
 
   const [items] = React.useState<CardType[]>(Card!);
 
   return (
-    <div
-      className="flex flex-col gap-4 min-w-48 w-full max-w-xs"
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-    >
-      <div className="flex justify-between">
-        <h2 className="text-md font-bold"> {name} </h2>
-        <Button variant={'ghost'} size={'sm'}>
-          <MoreHorizontal />
-        </Button>
-      </div>
-      <div className={`flex flex-col gap-2 min-h-96 h-auto`}>
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="min-w-48 w-full max-w-xs">
+      <ColumnShell id={id} boardId={boardId} name={name} Card={Card} position={0}>
         <SortableContext items={items.map((item) => `car-${item.id}`)} strategy={verticalListSortingStrategy}>
           {items?.map((card) => {
-            return <TodoCard key={card.id} {...card} />;
+            return (
+              <TodoCard key={card.id} {...card}>
+                <CardShell {...card} />
+              </TodoCard>
+            );
           })}
         </SortableContext>
-      </div>
+      </ColumnShell>
     </div>
   );
 };

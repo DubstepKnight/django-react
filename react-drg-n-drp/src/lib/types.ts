@@ -15,8 +15,6 @@ export interface Board {
   id: string; // UUID
   userId: number;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
 
   // Relations
   user?: User; // Optional relation to User
@@ -28,8 +26,6 @@ export interface Column {
   boardId: string;
   name: string;
   position: number;
-  createdAt: Date;
-  updatedAt: Date;
 
   // Relations
   Board?: Board; // Optional relation to Board
@@ -41,9 +37,12 @@ export interface Card {
   columnId: string;
   content: string;
   position: number;
-  createdAt: Date;
-  updatedAt: Date;
 
   // Relations
   Column?: Column; // Optional relation to Column
 }
+
+export type CardColumnPosition = {
+  cardIndex: number;
+  columnIndex: number;
+};

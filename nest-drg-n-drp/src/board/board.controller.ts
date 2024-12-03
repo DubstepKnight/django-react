@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('board')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
@@ -29,7 +32,7 @@ export class BoardController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log('id: ', id);
-    return this.boardService.findOne(id);
+    return this.boardService.findOneOrderByPosition(id);
   }
 
   @Patch(':id')

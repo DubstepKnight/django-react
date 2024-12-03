@@ -8,9 +8,9 @@ import ProfilePage from './pages/profile-page';
 import { getCookie } from './lib/get-cookie';
 
 export enum ROUTES {
-  Profile = 'profile',
-  SignIn = 'sign-in',
-  SignUp = 'sign-up',
+  Profile = '/profile',
+  SignIn = '/sign-in',
+  SignUp = '/sign-up',
 }
 
 export const router = createBrowserRouter([
@@ -23,9 +23,10 @@ export const router = createBrowserRouter([
         path: ':boardId',
         element: <BoardPage />,
         loader: () => {
-          const jwtCookie = getCookie('auth');
-          if (!jwtCookie) {
-            return redirect(`/${ROUTES.SignIn}`);
+          const loggedIn = getCookie('logged_in');
+          console.log('loggedIn: ', loggedIn);
+          if (!loggedIn) {
+            return redirect(ROUTES.SignIn);
           }
           return null;
         },
@@ -34,9 +35,9 @@ export const router = createBrowserRouter([
         path: ROUTES.Profile,
         element: <ProfilePage />,
         loader: () => {
-          const jwtCookie = getCookie('auth');
-          if (!jwtCookie) {
-            return redirect(`/${ROUTES.SignIn}`);
+          const loggedIn = getCookie('logged_in');
+          if (!loggedIn) {
+            return redirect(ROUTES.SignIn);
           }
           return null;
         },
@@ -44,16 +45,16 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: `/${ROUTES.SignUp}`,
+    path: ROUTES.SignUp,
     element: <SignUpPage />,
   },
   {
-    path: `/${ROUTES.SignIn}`,
+    path: ROUTES.SignIn,
     element: <SignInPage />,
     loader: () => {
-      const jwtCookie = getCookie('auth');
-      if (jwtCookie) {
-        return redirect(`/${ROUTES.Profile}`);
+      const loggedIn = getCookie('logged_in');
+      if (loggedIn) {
+        return redirect(ROUTES.Profile);
       }
       return null;
     },

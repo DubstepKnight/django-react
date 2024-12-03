@@ -2,10 +2,16 @@ import React from 'react';
 import { Button } from './ui/button';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from './theme-provider';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import { useToast } from '@/hooks/use-toast';
+import { ROUTES } from '@/routing';
 
 const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
+  const [, , removeCookie] = useCookies(['logged_in']);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const switchTheme = () => {
     if (theme === 'light') {
@@ -14,6 +20,15 @@ const Header: React.FC = () => {
     if (theme === 'dark') {
       setTheme('light');
     }
+  };
+
+  const logout = () => {
+    removeCookie('logged_in');
+    toast({
+      title: 'Successfull logged out!',
+    });
+
+    navigate(ROUTES.SignIn);
   };
 
   return (
@@ -30,7 +45,9 @@ const Header: React.FC = () => {
             <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           )}
         </Button>
-        <Button variant={'destructive'}> Log out </Button>
+        <Button onClick={logout} variant={'destructive'}>
+          Log out
+        </Button>
       </div>
     </header>
   );

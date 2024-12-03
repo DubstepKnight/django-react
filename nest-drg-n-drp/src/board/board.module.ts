@@ -6,9 +6,10 @@ import { PrismaService } from 'prisma/prisma.service';
 import { BoardGateway } from './board.gateway';
 import { CardModule } from 'src/card/card.module';
 import { ColumnModule } from 'src/column/column.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, PrismaModule, CardModule, ColumnModule],
+  imports: [PrismaModule, PrismaModule, CardModule, ColumnModule, AuthModule],
   controllers: [BoardController],
   providers: [BoardService, PrismaService, BoardGateway],
 })

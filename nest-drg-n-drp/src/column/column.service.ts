@@ -40,6 +40,19 @@ export class ColumnService {
     }
   }
 
+  async findByPosition(position: number) {
+    try {
+      const result = await this.prisma.column.findFirst({
+        where: {
+          position: position,
+        },
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async update(id: string, updateColumnDto: UpdateColumnDto) {
     try {
       const result = await this.prisma.column.update({

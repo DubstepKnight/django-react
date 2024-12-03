@@ -12,7 +12,7 @@ export class BoardService {
       const result = await this.prisma.board.create({ data });
       return result;
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -21,7 +21,7 @@ export class BoardService {
       const result = await this.prisma.board.findMany();
       return result;
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -41,7 +41,34 @@ export class BoardService {
       });
       return result;
     } catch (error) {
-      return error;
+      throw error;
+    }
+  }
+
+  async findOneOrderByPosition(id: string) {
+    try {
+      const result = await this.prisma.board.findFirst({
+        where: {
+          id: id,
+        },
+        include: {
+          Column: {
+            orderBy: {
+              position: 'asc',
+            },
+            include: {
+              Card: {
+                orderBy: {
+                  position: 'asc',
+                },
+              },
+            },
+          },
+        },
+      });
+      return result;
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -55,7 +82,7 @@ export class BoardService {
       });
       return result;
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -68,7 +95,7 @@ export class BoardService {
       });
       return result;
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 }

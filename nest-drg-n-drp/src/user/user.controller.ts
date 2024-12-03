@@ -1,25 +1,20 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseGuards,
   ConflictException,
   NotFoundException,
-  InternalServerErrorException,
+  Res,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { LoginDto } from './dto/login.dto';
-import { NotFoundError } from 'rxjs';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { Response, Request } from 'express';
+import { JwtRefreshAuthGuard } from 'src/auth/guards/jwt-refresh-auth.guard';
+import { User } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -48,7 +43,10 @@ export class UserController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     const foundUser = await this.userService.findByEmail(loginDto.email);
 
     if (!foundUser) {
@@ -57,6 +55,17 @@ export class UserController {
       );
     }
 
-    return this.authService.loginJwt(foundUser, loginDto.password);
+    return this.authService.loginJwt(foundUser, loginDto.password, response);
+  }
+
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('refresh_token')
+  async refreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const foundUser = req.user;
+
+    return this.authService.refreshTokens(foundUser as User, response);
   }
 }

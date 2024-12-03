@@ -1,5 +1,7 @@
+import { Board } from './types';
+
 type JwtLoginResponse = {
-  access_token: string;
+  email: string;
 };
 
 type LoginInputParameters = {
@@ -11,6 +13,7 @@ const login = async ({ email, password }: LoginInputParameters): Promise<JwtLogi
   try {
     const response = await fetch('http://localhost:3000/user/login', {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -32,13 +35,42 @@ const login = async ({ email, password }: LoginInputParameters): Promise<JwtLogi
   }
 };
 
-const getBoardById = async (boardId: string): Promise<any> => {
-  console.log('boardId: ', boardId);
+const refreshTokens = async (): Promise<JwtLoginResponse> => {
+  try {
+    const response = await fetch('http://localhost:3000/user/refresh_token', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
+    if (response.status === 401) {
+      document.cookie = 'logged_in=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    }
+
+    if (!response.ok) {
+      const errorBody = await response.json();
+      throw new Error(errorBody.message || `Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getBoardById = async (boardId: string): Promise<Board> => {
   try {
     const response = await fetch(`http://localhost:3000/board/${boardId}`, {
       method: 'GET',
+      credentials: 'include',
     });
+
+    if (response.status === 401) {
+      await refreshTokens();
+    }
 
     if (!response.ok) {
       const errorBody = await response.json();
@@ -53,4 +85,4 @@ const getBoardById = async (boardId: string): Promise<any> => {
   }
 };
 
-export { login, getBoardById };
+export { login, refreshTokens, getBoardById };

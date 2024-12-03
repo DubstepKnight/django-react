@@ -1,142 +1,173 @@
-import type { Board as BoardType } from '@/lib/types';
-import type { Column as ColumnType } from '@/lib/types';
+import type { CardColumnPosition, Column as ColumnType } from '@/lib/types';
+import type { Card as CardType } from '@/lib/types';
 import React from 'react';
 import ColumnComponent from './column';
-import { closestCenter, DndContext, DragEndEvent } from '@dnd-kit/core';
+import { Active, closestCenter, DndContext, DragEndEvent, DragOverlay, DragStartEvent, Over } from '@dnd-kit/core';
 import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable';
-import { findCard, findColumn } from '@/lib/utils';
+import {
+  findCard,
+  findCardPosition,
+  findColumn,
+  findColumnPosition,
+  moveCardToAnotherColumn,
+  moveCardWithinSameColumn,
+  moveColumn,
+} from '@/lib/utils';
+import DraggableItem from './draggable-item';
 
-const Board: React.FC<BoardType> = ({ Column }) => {
-  const [items, setItems] = React.useState<ColumnType[]>(Column!);
+interface IBoard {
+  items: ColumnType[];
+  setItems: React.Dispatch<React.SetStateAction<ColumnType[] | undefined>>;
+  moveCardEvent: (oldPosition: CardColumnPosition, newPosition: CardColumnPosition) => void;
+  deleteCardEvent: (value: any) => void;
+  createCardEvent: (value: any) => void;
+  editCardEvent: (value: any) => void;
+  moveColumnEvent: (value: any) => void;
+  deleteColumnEvent: (value: any) => void;
+  createColumnEvent: (value: any) => void;
+  editColumnEvent: (value: any) => void;
+}
 
+const Board: React.FC<IBoard> = ({
+  items,
+  setItems,
+  createCardEvent,
+  createColumnEvent,
+  deleteCardEvent,
+  deleteColumnEvent,
+  editCardEvent,
+  editColumnEvent,
+  moveCardEvent,
+  moveColumnEvent,
+}) => {
+  const [isColumnActive, setIsColumnActive] = React.useState<boolean>(false);
+  const [isCardActive, setIsCardActive] = React.useState<boolean>(false);
+  const [activeCard, setActiveCard] = React.useState<CardType>();
+  const [activeColumn, setActiveColumn] = React.useState<ColumnType>();
+
+  function handleCardOverCard(active: Active, over: Over) {
+    setItems((prevItems) => {
+      const newItems = [...prevItems!];
+      const activePos = findCardPosition(active, newItems);
+      const overPos = findCardPosition(over, newItems);
+
+      if (!activePos || !overPos) return newItems;
+
+      const activeColumnCards = newItems[activePos.columnIndex].Card;
+      const overColumnCards = newItems[overPos.columnIndex].Card;
+
+      if (activePos.columnIndex === overPos.columnIndex) {
+        moveCardWithinSameColumn(activeColumnCards!, activePos.cardIndex, overPos.cardIndex);
+      } else {
+        moveCardToAnotherColumn(activeColumnCards!, overColumnCards!, activePos.cardIndex, overPos.cardIndex);
+      }
+
+      // Optional: Call external function to update backend
+      moveCardEvent(activePos!, overPos!);
+
+      return newItems;
+    });
+  }
+
+  function handleCardOverColumn(active: Active, over: Over) {
+    setItems((prevItems) => {
+      const newItems = [...prevItems!];
+      const activePos = findCardPosition(active, newItems);
+      const overColIndex = findColumnPosition(over, newItems);
+
+      if (activePos === null || overColIndex === null) return newItems;
+
+      const activeColumnCards = newItems[activePos!.columnIndex].Card;
+      const overColumnCards = newItems[overColIndex!].Card;
+
+      if (activePos!.columnIndex === overColIndex) {
+        // Move to the end of the same column
+        moveCardWithinSameColumn(activeColumnCards!, activePos!.cardIndex, activeColumnCards!.length - 1);
+      } else {
+        // Move to the end of the other column
+        moveCardToAnotherColumn(activeColumnCards!, overColumnCards!, activePos!.cardIndex, overColumnCards!.length);
+      }
+
+      return newItems;
+    });
+  }
+
+  function handleColumnOverColumn(active: Active, over: Over) {
+    setItems((prevItems) => {
+      const newItems = [...prevItems!];
+      const activeColIndex = findColumnPosition(active, newItems);
+      const overColIndex = findColumnPosition(over, newItems);
+
+      if (activeColIndex === null || overColIndex === null) return newItems;
+
+      moveColumn(newItems, activeColIndex!, overColIndex!);
+      console.log('newItems: ', newItems);
+
+      return newItems;
+    });
+  }
+
+  // Refactored handleDragEnd function
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
-      const activeIsCol = `${active?.id}`.includes('col-');
-      const activeIsCard = `${active?.id}`.includes('car-');
-      const overIsCol = `${over?.id}`.includes('col-');
-      const overIsCard = `${over?.id}`.includes('car-');
+    if (!over || active.id === over.id) return;
 
-      if (activeIsCard && overIsCard) {
-        const overCard = findCard(over, items);
-        const activeCard = findCard(active, items);
+    const activeId = `${active.id}`;
+    const overId = `${over.id}`;
 
-        if (activeCard?.columnIndex === overCard?.columnIndex) {
-          setItems((items) => {
-            if (activeCard && overCard) {
-              const newCards = items[overCard.columnIndex].Card!;
-              newCards.splice(
-                overCard?.cardIndex < 0 ? newCards.length + overCard?.cardIndex : overCard?.cardIndex,
-                0,
-                newCards.splice(activeCard.cardIndex, 1)[0],
-              );
-              for (let i = 0; i < newCards.length; i++) {
-                const element = newCards[i];
-                element.position = i + 1;
-              }
-            }
-            return items;
-          });
-        }
+    const activeIsCol = activeId.includes('col-');
+    const activeIsCard = activeId.includes('car-');
+    const overIsCol = overId.includes('col-');
+    const overIsCard = overId.includes('car-');
 
-        if (activeCard?.columnIndex !== overCard?.columnIndex) {
-          setItems((items) => {
-            const activeColumnCards = items[activeCard!.columnIndex].Card!;
-            const removedCard = activeColumnCards.splice(activeCard!.cardIndex, 1)[0];
-
-            for (let i = 0; i < activeColumnCards.length; i++) {
-              const element = activeColumnCards[i];
-              element.position = i + 1;
-            }
-
-            const overColumnCards = items[overCard!.columnIndex].Card!;
-            overColumnCards.splice(
-              overCard!.cardIndex < 0 ? overColumnCards.length + overCard!.cardIndex : overCard!.cardIndex,
-              0,
-              removedCard,
-            );
-
-            for (let i = 0; i < overColumnCards.length; i++) {
-              const element = overColumnCards[i];
-              element.position = i + 1;
-            }
-
-            return items;
-          });
-        }
-      }
-
-      if (activeIsCard && overIsCol) {
-        const activeCard = findCard(active, items);
-        const overCol = findColumn(over, items);
-
-        if (activeCard?.columnIndex === overCol) {
-          setItems((items) => {
-            if (activeCard && overCol?.toString()) {
-              const newCards = items[overCol].Card!;
-              newCards.push(newCards.splice(activeCard.cardIndex, 1)[0]);
-
-              for (let i = 0; i < newCards.length; i++) {
-                const element = newCards[i];
-                element.position = i + 1;
-              }
-            }
-            return items;
-          });
-        }
-
-        if (activeCard?.columnIndex !== overCol) {
-          setItems((items) => {
-            if (activeCard?.columnIndex.toString() && overCol?.toString()) {
-              const activeColumnCards = items[activeCard.columnIndex].Card!;
-              const removedCard = activeColumnCards.splice(activeCard.cardIndex, 1)[0];
-
-              for (let i = 0; i < activeColumnCards.length; i++) {
-                const element = activeColumnCards[i];
-                element.position = i + 1;
-              }
-
-              const overColumnCards = items[overCol].Card!;
-              overColumnCards.push(removedCard);
-
-              for (let i = 0; i < overColumnCards.length; i++) {
-                const element = overColumnCards[i];
-                element.position = i + 1;
-              }
-            }
-            return items;
-          });
-        }
-      }
-
-      if (activeIsCol && overIsCol) {
-        const activeCol = findColumn(active, items);
-        const overCol = findColumn(over, items);
-
-        if (activeCol?.toString() && overCol?.toString()) {
-          setItems((items) => {
-            const newArray = items.slice();
-            newArray.splice(overCol < 0 ? newArray.length + overCol : overCol, 0, newArray.splice(activeCol, 1)[0]);
-            for (let i = 0; i < newArray.length; i++) {
-              const element = newArray[i];
-              element.position = i + 1;
-            }
-            return newArray;
-          });
-        }
-      }
+    if (activeIsCard && overIsCard) {
+      handleCardOverCard(active!, over);
+    } else if (activeIsCard && overIsCol) {
+      handleCardOverColumn(active!, over);
+    } else if (activeIsCol && overIsCol) {
+      handleColumnOverColumn(active!, over);
     }
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+
+    if (`${active.id}`.slice(0, 4) === 'car-') {
+      setIsCardActive(true);
+      setIsColumnActive(false);
+
+      const activeCard = findCard(active, items);
+      setActiveCard(activeCard);
+    }
+    if (`${active.id}`.slice(0, 4) === 'col-') {
+      setIsColumnActive(true);
+      setIsCardActive(false);
+
+      const activeColumn = findColumn(active, items);
+
+      setActiveColumn(activeColumn);
+    }
+  };
+
+  console.log('items: ', items);
+
   return (
     <div className={`flex gap-4`}>
-      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-        <SortableContext items={items.map((item) => `col-${item.id}`)} strategy={horizontalListSortingStrategy}>
+      <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart} collisionDetection={closestCenter}>
+        <SortableContext items={items!.map((item) => `col-${item.id}`)} strategy={horizontalListSortingStrategy}>
           {items?.map((col) => {
             return <ColumnComponent key={col.id} {...col} />;
           })}
         </SortableContext>
+        <DragOverlay>
+          <DraggableItem
+            isCardActive={isCardActive}
+            isColumnActive={isColumnActive}
+            cardItems={activeCard}
+            columnItems={activeColumn}
+          />
+        </DragOverlay>
       </DndContext>
     </div>
   );

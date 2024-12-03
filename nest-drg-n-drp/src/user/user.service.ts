@@ -19,4 +19,18 @@ export class UserService {
       where: { email: email },
     });
   }
+
+  async findById(id: number): Promise<User> {
+    try {
+      return this.prisma.user.findFirst({
+        where: { id: id },
+      });
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async updateUser(userId: number, data: any) {
+    return this.prisma.user.update({ where: { id: userId }, data: data });
+  }
 }

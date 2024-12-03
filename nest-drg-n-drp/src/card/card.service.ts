@@ -50,6 +50,90 @@ export class CardService {
     }
   }
 
+  async findByPositionAndColumnId(cardPosition: number, columnId: string) {
+    try {
+      const result = await this.prisma.card.findFirst({
+        where: {
+          position: cardPosition,
+          columnId: columnId,
+        },
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateCardPosition(
+    columnId: string,
+    draggedCardId: string,
+    oldPosition: number,
+    newPosition: number,
+  ) {
+    try {
+      const result = await this.prisma.$transaction(async (prisma) => {
+        const tempPosition = -1;
+        const updateDraggedCardTemp = await prisma.card.update({
+          where: {
+            id: draggedCardId,
+          },
+          data: {
+            position: tempPosition,
+          },
+        });
+
+        if (!updateDraggedCardTemp) {
+          throw new Error('Conflict detected while updating the card');
+        }
+
+        if (newPosition > oldPosition) {
+          // Moving down
+          console.log('moving down');
+          await prisma.card.updateMany({
+            where: {
+              columnId: columnId,
+              position: {
+                gt: oldPosition,
+                lte: newPosition,
+              },
+            },
+            data: {
+              position: {
+                decrement: 1,
+              },
+            },
+          });
+        } else if (newPosition < oldPosition) {
+          console.log('moving up');
+          // Moving up
+          await prisma.card.updateMany({
+            where: {
+              columnId: columnId,
+              position: {
+                gte: newPosition,
+                lt: oldPosition,
+              },
+            },
+            data: {
+              position: {
+                increment: 1,
+              },
+            },
+          });
+        }
+        // Update the position of the dragged card
+        await prisma.card.update({
+          where: { id: draggedCardId },
+          data: { position: newPosition },
+        });
+      });
+      console.log('inner result: ', result);
+      return result;
+    } catch (error) {
+      throw new Error(`Failed to update card positions: ${error.message}`);
+    }
+  }
+
   async remove(id: string) {
     try {
       const result = await this.prisma.card.delete({
