@@ -115,7 +115,7 @@ const BoardPage: React.FC = () => {
     );
   }
 
-  if (isError) {
+  if (isError && error) {
     return <ErrorComponent errorMessage={error.message} />;
   }
 
