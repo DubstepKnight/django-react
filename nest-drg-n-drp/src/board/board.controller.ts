@@ -14,7 +14,7 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
-@Controller('board')
+@Controller('boards')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 

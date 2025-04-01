@@ -11,7 +11,7 @@ type LoginInputParameters = {
 
 const login = async ({ email, password }: LoginInputParameters): Promise<JwtLoginResponse> => {
   try {
-    const response = await fetch('http://localhost:3000/user/login', {
+    const response = await fetch('http://localhost:3000/users/login', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -37,7 +37,7 @@ const login = async ({ email, password }: LoginInputParameters): Promise<JwtLogi
 
 const refreshTokens = async (): Promise<JwtLoginResponse> => {
   try {
-    const response = await fetch('http://localhost:3000/user/refresh_token', {
+    const response = await fetch('http://localhost:3000/users/refresh_token', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -63,7 +63,7 @@ const refreshTokens = async (): Promise<JwtLoginResponse> => {
 
 const getBoardById = async (boardId: string): Promise<Board> => {
   try {
-    const response = await fetch(`http://localhost:3000/board/${boardId}`, {
+    const response = await fetch(`http://localhost:3000/boards/${boardId}`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -87,7 +87,7 @@ const getBoardById = async (boardId: string): Promise<Board> => {
 
 const getAllBoardsShallow = async (): Promise<{ id: number; name: string }[]> => {
   try {
-    const response = await fetch(`http://localhost:3000/board/all-shallow`, {
+    const response = await fetch(`http://localhost:3000/boards/all-shallow`, {
       method: 'GET',
       credentials: 'include',
     });
