@@ -5,11 +5,12 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { login } from '@/lib/requests';
 import { Label } from '@radix-ui/react-label';
 import { useMutation } from '@tanstack/react-query';
-import React from 'react';
+import React, { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeClosed } from 'lucide-react';
 
 type Inputs = {
   email: string;
@@ -21,6 +22,8 @@ const SignInPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { toast } = useToast();
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const { mutate, isPending } = useMutation({
     mutationFn: login,
@@ -71,17 +74,29 @@ const SignInPage: React.FC = () => {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                {...register('password', {
-                  required: { value: true, message: 'There has to be a password' },
-                  minLength: { value: 8, message: 'Password should be at least 8 characters long' },
-                })}
-                id="password"
-                type="password"
-                name="password"
-                placeholder="***********"
-                required
-              />
+              <div className="flex gap-2">
+                <Input
+                  {...register('password', {
+                    required: { value: true, message: 'There has to be a password' },
+                    minLength: { value: 8, message: 'Password should be at least 8 characters long' },
+                  })}
+                  id="password"
+                  type={isPasswordVisible ? 'text' : 'password'}
+                  name="password"
+                  placeholder="examplePassword!"
+                  required
+                  endIcon={
+                    <Button
+                      variant="ghost"
+                      className="rounded-full"
+                      size={'icon'}
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    >
+                      {isPasswordVisible ? <Eye size={16} /> : <EyeClosed size={16} />}
+                    </Button>
+                  }
+                />
+              </div>
               {errors.password && (
                 <p className="text-sm text-red-600" role="alert">
                   {errors.password.message}
