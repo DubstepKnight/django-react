@@ -25,6 +25,20 @@ export class BoardService {
     }
   }
 
+  async findAllShallow() {
+    try {
+      const result = await this.prisma.board.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findOne(id: string) {
     try {
       const result = await this.prisma.board.findFirst({

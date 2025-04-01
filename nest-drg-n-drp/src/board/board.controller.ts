@@ -29,6 +29,11 @@ export class BoardController {
     return this.boardService.findAll();
   }
 
+  @Get('all-shallow')
+  findAllIds() {
+    return this.boardService.findAllShallow();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log('id: ', id);
