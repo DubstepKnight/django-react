@@ -31,8 +31,14 @@ export class AuthService {
       const accessToken = this.jwtService.sign(payload);
       const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
+      const refreshTokenExpirationDate = new Date();
+      refreshTokenExpirationDate.setDate(
+        refreshTokenExpirationDate.getDate() + 7,
+      );
+
       const result = this.userService.updateUser(validatedUser.id, {
         refreshToken: await hash(refreshToken, 10),
+        refreshTokenExpirationDate: refreshTokenExpirationDate,
       });
 
       response.cookie('auth', accessToken, {
@@ -94,7 +100,7 @@ export class AuthService {
 
       this.userService.updateUser(user.id, {
         refreshToken: await hash(refreshToken, 10),
-        refreshTokenExpiresAt: refreshTokenExpiresAt,
+        refreshTokenExpirationDate: refreshTokenExpiresAt,
       });
 
       response.cookie('auth', accessToken, {
@@ -133,6 +139,7 @@ export class AuthService {
         refreshToken,
         user.refreshToken,
       );
+
       if (!isRefreshTokenValid) {
         throw new UnauthorizedException('Invalid refresh token');
       }
