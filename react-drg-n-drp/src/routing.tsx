@@ -20,11 +20,10 @@ export const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       {
-        path: ':boardId',
+        path: '/boards/:boardId',
         element: <BoardPage />,
         loader: () => {
           const loggedIn = getCookie('logged_in');
-          console.log('loggedIn: ', loggedIn);
           if (!loggedIn) {
             return redirect(ROUTES.SignIn);
           }
