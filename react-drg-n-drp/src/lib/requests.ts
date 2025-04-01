@@ -85,4 +85,28 @@ const getBoardById = async (boardId: string): Promise<Board> => {
   }
 };
 
-export { login, refreshTokens, getBoardById };
+const getAllBoardsShallow = async (): Promise<{ id: number; name: string }[]> => {
+  try {
+    const response = await fetch(`http://localhost:3000/board/all-shallow`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (response.status === 401) {
+      await refreshTokens();
+    }
+
+    if (!response.ok) {
+      const errorBody = await response.json();
+      throw new Error(errorBody.message || `Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export { login, refreshTokens, getBoardById, getAllBoardsShallow };
