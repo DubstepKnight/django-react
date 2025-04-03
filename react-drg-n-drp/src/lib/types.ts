@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
   id: number;
   firstname: string;
   lastname: string;
@@ -8,38 +8,38 @@ export interface User {
   updatedAt: Date | null;
 
   // Relations
-  Board?: Board[]; // Optional, as it might not be included in every query
+  Board?: IBoard[]; // Optional, as it might not be included in every query
 }
 
-export interface Board {
+export interface IBoard {
   id: string; // UUID
   userId: number;
   name: string;
 
   // Relations
-  user?: User; // Optional relation to User
-  Column?: Column[]; // Optional array of Columns
+  user?: IUser; // Optional relation to User
+  Column?: IColumn[]; // Optional array of Columns
 }
 
-export interface Column {
+export interface IColumn {
   id: string; // UUID
   boardId: string;
   name: string;
   position: number;
 
   // Relations
-  Board?: Board; // Optional relation to Board
-  Card?: Card[]; // Optional array of Cards
+  Board?: IBoard; // Optional relation to Board
+  Card?: ICard[]; // Optional array of Cards
 }
 
-export interface Card {
+export interface ICard {
   id: string; // UUID
   columnId: string;
   content: string;
   position: number;
 
   // Relations
-  Column?: Column; // Optional relation to Column
+  Column?: IColumn; // Optional relation to Column
 }
 
 export type CardColumnPosition = {

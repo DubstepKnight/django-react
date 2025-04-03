@@ -2,11 +2,11 @@ import React from 'react';
 import { CardShell } from './card-shell';
 import ColumnShell from './column-shell';
 import TodoCard from './todo-card';
-import { Card, Column } from '@/lib/types';
+import { ICard, IColumn } from '@/lib/types';
 
 interface IDraggableItem {
-  cardItems?: Card;
-  columnItems?: Column;
+  cardItems?: ICard;
+  columnItems?: IColumn;
   isColumnActive: boolean;
   isCardActive: boolean;
 }

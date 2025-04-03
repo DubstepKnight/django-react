@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Column as ColumnType } from '@/lib/types';
+import type { IColumn as ColumnType } from '@/lib/types';
 import { Button } from './ui/button';
 import { MoreHorizontal } from 'lucide-react';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle } from './ui/card';
-import type { Card as CardType } from '@/lib/types';
+import type { ICard as CardType } from '@/lib/types';
 
 const CardShell: React.FC<CardType> = ({ content }) => {
   return (

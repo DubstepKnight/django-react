@@ -1,8 +1,7 @@
 import React from 'react';
-import type { Card as CardType } from '@/lib/types';
+import type { ICard as CardType } from '@/lib/types';
 import { CSS } from '@dnd-kit/utilities';
 import { useSortable } from '@dnd-kit/sortable';
-import { Card } from './ui/card';
 
 interface ITodoCardProps extends CardType {
   children: React.ReactNode;

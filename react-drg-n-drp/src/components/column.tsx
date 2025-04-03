@@ -1,5 +1,5 @@
-import type { Column as ColumnType } from '@/lib/types';
-import type { Card as CardType } from '@/lib/types';
+import type { IColumn as ColumnType } from '@/lib/types';
+import type { ICard as CardType } from '@/lib/types';
 import React from 'react';
 import TodoCard from './todo-card';
 import { CSS } from '@dnd-kit/utilities';

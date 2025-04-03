@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Card, Card as CardType, Column } from './types';
-import { Column as ColumnType } from './types';
+import { ICard, ICard as CardType, IColumn } from './types';
+import { IColumn as ColumnType } from './types';
 import { Active, Over } from '@dnd-kit/core';
 
 export function cn(...inputs: ClassValue[]) {
@@ -59,15 +59,15 @@ export const findColumnPosition = (column: Active | Over, items: any[]) => {
 };
 
 // Moving utilities
-export const moveCardWithinSameColumn = (columnCards: Card[], fromIndex: number, toIndex: number): void => {
+export const moveCardWithinSameColumn = (columnCards: ICard[], fromIndex: number, toIndex: number): void => {
   const [movedCard] = columnCards.splice(fromIndex, 1);
   columnCards.splice(toIndex, 0, movedCard);
   updateCardPositions(columnCards);
 };
 
 export const moveCardToAnotherColumn = (
-  fromColumnCards: Card[],
-  toColumnCards: Card[],
+  fromColumnCards: ICard[],
+  toColumnCards: ICard[],
   fromIndex: number,
   toIndex: number,
 ): void => {
@@ -78,7 +78,7 @@ export const moveCardToAnotherColumn = (
   updateCardPositions(toColumnCards);
 };
 
-export const moveColumn = (columns: Column[], fromIndex: number, toIndex: number): void => {
+export const moveColumn = (columns: IColumn[], fromIndex: number, toIndex: number): void => {
   console.log('column gets to move');
   const [movedColumn] = columns.splice(fromIndex, 1);
   console.log('movedColumn: ', movedColumn);
@@ -88,13 +88,13 @@ export const moveColumn = (columns: Column[], fromIndex: number, toIndex: number
 };
 
 // Update position utilities
-export const updateCardPositions = (cards: Card[]): void => {
+export const updateCardPositions = (cards: ICard[]): void => {
   cards.forEach((card, index) => {
     card.position = index + 1;
   });
 };
 
-export const updateColumnPositions = (columns: Column[]): void => {
+export const updateColumnPositions = (columns: IColumn[]): void => {
   columns.forEach((column, index) => {
     column.position = index + 1;
   });

@@ -1,5 +1,5 @@
-import type { CardColumnPosition, Column as ColumnType } from '@/lib/types';
-import type { Card as CardType } from '@/lib/types';
+import type { CardColumnPosition, IColumn as ColumnType } from '@/lib/types';
+import type { ICard as CardType } from '@/lib/types';
 import React from 'react';
 import ColumnComponent from './column';
 import { Active, closestCenter, DndContext, DragEndEvent, DragOverlay, DragStartEvent, Over } from '@dnd-kit/core';

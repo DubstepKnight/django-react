@@ -1,5 +1,5 @@
 import React from 'react';
-import type { CardColumnPosition, Column as ColumnType } from '@/lib/types';
+import type { CardColumnPosition, IColumn as ColumnType } from '@/lib/types';
 import { getBoardById } from '@/lib/requests';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';

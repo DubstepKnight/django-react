@@ -1,4 +1,4 @@
-import { Board } from './types';
+import { IBoard } from './types';
 
 type JwtLoginResponse = {
   email: string;
@@ -61,7 +61,7 @@ const refreshTokens = async (): Promise<JwtLoginResponse> => {
   }
 };
 
-const getBoardById = async (boardId: string): Promise<Board> => {
+const getBoardById = async (boardId: string): Promise<IBoard> => {
   try {
     const response = await fetch(`http://localhost:3000/boards/${boardId}`, {
       method: 'GET',
