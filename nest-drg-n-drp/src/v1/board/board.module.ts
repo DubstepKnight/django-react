@@ -4,9 +4,9 @@ import { BoardController } from './board.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { PrismaService } from 'prisma/prisma.service';
 import { BoardGateway } from './board.gateway';
-import { CardModule } from 'src/card/card.module';
-import { ColumnModule } from 'src/column/column.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { CardModule } from 'src/v1/card/card.module';
+import { ColumnModule } from 'src/v1/column/column.module';
+import { AuthModule } from 'src/v1/auth/auth.module';
 
 @Module({
   imports: [PrismaModule, PrismaModule, CardModule, ColumnModule, AuthModule],

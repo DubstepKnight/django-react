@@ -7,10 +7,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { CardService } from 'src/card/card.service';
-import { ColumnService } from 'src/column/column.service';
-import { CardColumnPosition } from 'src/types';
+import { JwtAuthGuard } from 'src/v1/auth/guards/jwt-auth.guard';
+import { CardService } from 'src/v1/card/card.service';
+import { ColumnService } from 'src/v1/column/column.service';
+import { CardColumnPosition } from 'src/v1/types';
 
 // @UseGuards(JwtAuthGuard)
 @WebSocketGateway(3002, { cors: 'http://localhost:5173' })

@@ -10,13 +10,13 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from 'src/v1/auth/auth.service';
 import { LoginDto } from './dto/login.dto';
 import { Response, Request } from 'express';
-import { JwtRefreshAuthGuard } from 'src/auth/guards/jwt-refresh-auth.guard';
+import { JwtRefreshAuthGuard } from 'src/v1/auth/guards/jwt-refresh-auth.guard';
 import { User } from '@prisma/client';
 
-@Controller('users')
+@Controller({ path: 'users', version: '1' })
 export class UserController {
   constructor(
     private readonly userService: UserService,

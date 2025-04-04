@@ -11,7 +11,7 @@ import { CardService } from './card.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 
-@Controller('cards')
+@Controller({ path: 'cards', version: '1' })
 export class CardController {
   constructor(private readonly cardService: CardService) {}
   asdasd;

@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { Response } from 'express';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/v1/user/user.service';
 
 const saltRounds = 10;
 

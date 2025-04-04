@@ -11,7 +11,7 @@ import { ColumnService } from './column.service';
 import { CreateColumnDto } from './dto/create-column.dto';
 import { UpdateColumnDto } from './dto/update-column.dto';
 
-@Controller('columns')
+@Controller({path: 'columns', version: '1'})
 export class ColumnController {
   constructor(private readonly columnService: ColumnService) {}
 

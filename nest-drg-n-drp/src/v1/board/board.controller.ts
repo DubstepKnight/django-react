@@ -11,10 +11,10 @@ import {
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/v1/auth/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
-@Controller('boards')
+@Controller({ path: 'boards', version: '1' })
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 

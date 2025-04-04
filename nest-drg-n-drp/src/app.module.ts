@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { AuthModule } from './v1/auth/auth.module';
+import { UserModule } from './v1/user/user.module';
 import { ConfigModule } from '@nestjs/config';
-import { BoardModule } from './board/board.module';
-import { ColumnModule } from './column/column.module';
-import { CardModule } from './card/card.module';
+import { BoardModule } from './v1/board/board.module';
+import { ColumnModule } from './v1/column/column.module';
+import { CardModule } from './v1/card/card.module';
 
 @Module({
   imports: [

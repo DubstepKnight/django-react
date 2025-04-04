@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { PrismaService } from 'prisma/prisma.service';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from 'src/v1/auth/auth.module';
 
 @Module({
   imports: [forwardRef(() => AuthModule), PrismaModule],
