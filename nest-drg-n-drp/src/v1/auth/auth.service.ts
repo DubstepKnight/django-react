@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { UserService } from 'src/v1/user/user.service';
+import { EXPIRES_AT } from './auth.module';
 
 const saltRounds = 10;
 
@@ -31,24 +32,33 @@ export class AuthService {
       const accessToken = this.jwtService.sign(payload);
       const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-      const refreshTokenExpirationDate = new Date();
-      refreshTokenExpirationDate.setDate(
-        refreshTokenExpirationDate.getDate() + 7,
-      );
+      const refreshTokenExpiresAt = new Date();
+      refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + 7);
+
+      const tokenExpiresAt = new Date();
+      tokenExpiresAt.setDate(tokenExpiresAt.getMinutes() + EXPIRES_AT);
 
       const result = this.userService.updateUser(validatedUser.id, {
         refreshToken: await hash(refreshToken, 10),
-        refreshTokenExpirationDate: refreshTokenExpirationDate,
+        refreshTokenExpirationDate: refreshTokenExpiresAt,
       });
 
       response.cookie('auth', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production' ? true : false,
+        expires: tokenExpiresAt,
+      });
+
+      response.cookie('logged_in', true, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        expires: tokenExpiresAt,
       });
 
       response.cookie('refresh_token', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production' ? true : false,
+        expires: refreshTokenExpiresAt,
       });
 
       return {
@@ -98,6 +108,9 @@ export class AuthService {
       const refreshTokenExpiresAt = new Date();
       refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + 7);
 
+      const tokenExpiresAt = new Date();
+      tokenExpiresAt.setDate(tokenExpiresAt.getMinutes() + EXPIRES_AT);
+
       this.userService.updateUser(user.id, {
         refreshToken: await hash(refreshToken, 10),
         refreshTokenExpirationDate: refreshTokenExpiresAt,
@@ -106,11 +119,19 @@ export class AuthService {
       response.cookie('auth', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production' ? true : false,
+        expires: tokenExpiresAt,
+      });
+
+      response.cookie('logged_in', true, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        expires: tokenExpiresAt,
       });
 
       response.cookie('refresh_token', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production' ? true : false,
+        expires: refreshTokenExpiresAt,
       });
 
       return {

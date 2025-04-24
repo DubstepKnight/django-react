@@ -7,6 +7,8 @@ import { jwtConstants } from './auth.constants';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
+export const EXPIRES_AT = 120;
+
 @Module({
   imports: [
     forwardRef(() => UserModule),
@@ -14,7 +16,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60m' },
+      signOptions: { expiresIn: `${EXPIRES_AT}m` },
     }),
   ],
   providers: [AuthService, JwtStrategy, JwtRefreshStrategy],
