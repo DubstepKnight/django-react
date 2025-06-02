@@ -1,29 +1,27 @@
 import React from 'react';
 import { CardShell } from './card-shell';
 import ColumnShell from './column-shell';
-import TodoCard from './todo-card';
-import { ICard, IColumn } from '@/lib/types';
+import { useBoardContext } from '@/context/BoardProvider';
 
-interface IDraggableItem {
-  cardItems?: ICard;
-  columnItems?: IColumn;
-  isColumnActive: boolean;
-  isCardActive: boolean;
-}
+type IDraggableItem = {
+  id: string;
+  type: any;
+};
 
-const DraggableItem: React.FC<IDraggableItem> = ({ cardItems, columnItems, isCardActive, isColumnActive }) => {
-  if (isCardActive && cardItems) {
-    return <CardShell {...cardItems} />;
+const DraggableItem: React.FC<IDraggableItem> = ({ id, type }) => {
+  const { state } = useBoardContext();
+
+  if (type === 'card') {
+    const activeCard = state.cards[id];
+    return <CardShell {...activeCard} />;
   }
-  if (isColumnActive && columnItems) {
+  if (type === 'column') {
+    const activeColumn = state.columns[id];
     return (
-      <ColumnShell {...columnItems}>
-        {columnItems.Card?.map((card) => {
-          return (
-            <TodoCard key={card.id} {...card}>
-              <CardShell {...card} />
-            </TodoCard>
-          );
+      <ColumnShell {...state.columns[id]}>
+        {state.cardOrder[activeColumn.id]?.map((cardId) => {
+          const card = state.cards[cardId];
+          return <CardShell {...card} />;
         })}
       </ColumnShell>
     );
