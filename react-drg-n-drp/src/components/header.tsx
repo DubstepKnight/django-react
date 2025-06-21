@@ -3,15 +3,20 @@ import { Button } from './ui/button';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from './theme-provider';
 import { Link, useNavigate } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
 import { useToast } from '@/hooks/use-toast';
 import { ROUTES } from '@/routing';
+import { Switch } from './ui/switch';
+import { useAuth } from '@/context/AuthProvider';
+import { ActionType } from '@/context/AuthContext';
+import { logout } from '@/lib/requests/auth';
+import { getCookie } from '@/lib/get-cookie';
 
 const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
-  const [, , removeCookie] = useCookies(['logged_in']);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const { devMode, dispatch } = useAuth();
 
   const switchTheme = () => {
     if (theme === 'light') {
@@ -22,10 +27,18 @@ const Header: React.FC = () => {
     }
   };
 
-  const logout = () => {
-    removeCookie('logged_in');
+  const handleLogout = async () => {
+    await logout();
+    const loggedInCookie = getCookie('logged_in');
+    if (loggedInCookie) {
+      toast({
+        title: 'Successfully logged out!',
+        variant: 'destructive',
+      });
+      return;
+    }
     toast({
-      title: 'Successfull logged out!',
+      title: 'Successfully logged out!',
     });
 
     navigate(ROUTES.SignIn);
@@ -45,7 +58,15 @@ const Header: React.FC = () => {
             <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           )}
         </Button>
-        <Button onClick={logout} variant={'destructive'}>
+        <span className="flex items-center gap-4">
+          <label htmlFor="devMode">Dev mode</label>
+          <Switch
+            id="devMode"
+            checked={devMode}
+            onCheckedChange={() => dispatch({ type: ActionType.SWITCH_DEV_MODE })}
+          />
+        </span>
+        <Button onClick={handleLogout} variant={'destructive'}>
           Log out
         </Button>
       </div>
