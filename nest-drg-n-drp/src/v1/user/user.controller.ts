@@ -68,4 +68,10 @@ export class UserController {
 
     return this.authService.refreshTokens(foundUser as User, response);
   }
+
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) response: Response) {
+    return this.authService.logoutJwt(response);
+  }
 }

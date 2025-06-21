@@ -38,7 +38,7 @@ export class AuthService {
       const tokenExpiresAt = new Date();
       tokenExpiresAt.setDate(tokenExpiresAt.getMinutes() + EXPIRES_AT);
 
-      const result = this.userService.updateUser(validatedUser.id, {
+      this.userService.updateUser(validatedUser.id, {
         refreshToken: await hash(refreshToken, 10),
         refreshTokenExpirationDate: refreshTokenExpiresAt,
       });
@@ -86,6 +86,26 @@ export class AuthService {
       console.error(error);
       return error;
     }
+  }
+
+  async logoutJwt(response: Response) {
+    response.cookie('auth', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      expires: new Date(),
+    });
+
+    response.cookie('logged_in', '', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      expires: new Date(),
+    });
+
+    response.cookie('refresh_token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      expires: new Date(),
+    });
   }
 
   async hashPassword(password): Promise<string> {
