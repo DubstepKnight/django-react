@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from './ui/button';
 import { AlertCircle, Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { getAllBoardsShallow } from '@/lib/requests';
+import { getAllBoardsShallow } from '@/lib/requests/board';
 import { Skeleton } from './ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Link } from 'react-router-dom';
@@ -50,7 +50,7 @@ const BoardsList: React.FC<IBoardsList> = ({ data, isLoading, isError, error }) 
       <ul>
         {data.map((board) => {
           return (
-            <Link key={board.id} to={`boards/${String(board.id)}`}>
+            <Link key={board.id} to={`boards/${String(board.id)}`} className="hover:underline">
               {board.name}
             </Link>
           );
