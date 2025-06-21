@@ -1,3 +1,8 @@
+export enum DraggableType {
+  Card,
+  Column,
+}
+
 export interface IUser {
   id: number;
   firstname: string;
@@ -41,6 +46,15 @@ export interface ICard {
   // Relations
   Column?: IColumn; // Optional relation to Column
 }
+
+export type BoardState = {
+  boardOrder: string[]; // [boardId, ...]
+  boards: { [id: string]: IBoard };
+  columnOrder: string[]; // [columnId, ...]
+  columns: { [id: string]: IColumn };
+  cardOrder: { [columnId: string]: string[] }; // { columnId: [cardId, ...] }
+  cards: { [id: string]: ICard };
+};
 
 export type CardColumnPosition = {
   cardIndex: number;
