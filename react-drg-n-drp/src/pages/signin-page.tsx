@@ -2,15 +2,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { login } from '@/lib/requests';
 import { Label } from '@radix-ui/react-label';
 import { useMutation } from '@tanstack/react-query';
 import React, { useState } from 'react';
-import { useCookies } from 'react-cookie';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeClosed } from 'lucide-react';
+import { useAuth } from '@/context/AuthProvider';
+import { ActionType } from '@/context/AuthContext';
+import { login } from '@/lib/requests/auth';
 
 type Inputs = {
   email: string;
@@ -18,17 +19,17 @@ type Inputs = {
 };
 
 const SignInPage: React.FC = () => {
-  const [, setCookie] = useCookies(['logged_in']);
   const navigate = useNavigate();
 
   const { toast } = useToast();
+  const { dispatch } = useAuth();
 
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      setCookie('logged_in', true);
+      dispatch({ type: ActionType.SIGN_IN });
       toast({
         title: `Successfull sign in ${data.email}!`,
       });
@@ -89,6 +90,7 @@ const SignInPage: React.FC = () => {
                     <Button
                       variant="ghost"
                       className="rounded-full"
+                      type="button"
                       size={'icon'}
                       onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                     >
